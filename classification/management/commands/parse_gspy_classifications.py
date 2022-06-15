@@ -10,18 +10,31 @@ class Command(BaseCommand):
     help = 'Querying the Gravity Spy Plus zooniverse project for classifications'
     def add_arguments(self, parser):
         parser.add_argument("--project-id", default='9979')
+        parser.add_argument("--number-of-classifications", type=int, default=100)
         parser.add_argument("--last-classification-id", type=int, default=None)
+        parser.add_argument("--workflow-id", type=int, default=None)
+        parser.add_argument("--user-id", type=int, default=None)
         parser.add_argument("--verbose", type=bool, default=True)
+
     #last_id reference?
     def handle(self, *args, **options):
+        kwargs_classifications = {"project_id" : options['project_id'],
+                                  "scope" : 'project'}
         if options['last_classification_id'] is not None:
-            all_classifications = panoptes_client.Classification.where(project_id=options['project_id'], scope='project', last_id='{0}'.format(options['last_classification_id']), page_size='100')
-        else:
-            all_classifications = panoptes_client.Classification.where(project_id=options['project_id'], scope='project', page_size='100')
+            kwargs_classifications["last_id"] = '{0}'.format(options['last_classification_id'])
+            
+        if options['workflow_id'] is not None:
+            kwargs_classifications["workflow_id"] = '{0}'.format(options['workflow_id'])
+
+        if options['user_id'] is not None:
+            kwargs_classifications["user_id"] = '{0}'.format(options['user_id'])
+
+        all_classifications = panoptes_client.Classification.where(**kwargs_classifications)
 
         list_of_classification_dictionaries = []
+        
         # Loop until no more classifications
-        for iN in range(0,all_classifications.object_count):
+        for iN in range(0, options['number_of_classifications']):
             try:
                 classification = all_classifications.next()
                 list_of_classification_dictionaries.append(classification.raw)
