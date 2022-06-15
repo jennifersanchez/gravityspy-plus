@@ -22,7 +22,6 @@ class Classification(models.Model):
     user is 386563
     subject is 76084855    
     """
-
     #Field defining
     classification_id = models.IntegerField()
     annotation = ArrayField(models.IntegerField())
