@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 import panoptes_client
 
 from classification.models import Classification
+from subject.models import GravitySpySubject
 
 class Command(BaseCommand):
     help = 'Querying the Gravity Spy Plus zooniverse project for classifications'
@@ -59,28 +60,48 @@ class Command(BaseCommand):
                         annotation_counts[1] = 1
                     else:
                         annotation_counts[2] = 1
-                #Save all the annotation labels in the list
-                annotation = []
-                for k in range(len(annotation_counts)):
-                    if annotation_counts[k] == 1:
-                        annotation.append(k)
 
                 workflow_id=classification['links']['workflow']
                 user_id=classification['links']['user']
                 subject_id=classification['links']['subjects'][0]      
+                        
+                # Query classification from subjects
+                subject_entry = GravitySpySubject.objects.get(zooniverse_subject_ids__overlap=[int(subject_id)]) # TODO: Should be a more neat way for this
+                event_time=subject_entry.event_time
+                gravityspy_id=subject_entry.gravityspy_id
+                ifo=subject_entry.ifo
+                main_channel_name = subject_entry.main_channel
+                event_generator=subject_entry.event_generator
+                hveto_round_number=subject_entry.hveto_round_number
+
+                #Save all the annotation labels in the list
+                index = subject_entry.zooniverse_subject_ids.index(int(subject_id))
+                annotation_channel_full_names = subject_entry.list_of_auxiliary_channel_names[index * 3:index * 3 + 3]
+                annotation = []
+                annotation_channel_names = []
+                for k in range(len(annotation_counts)):
+                    if annotation_counts[k] == 1:
+                        annotation.append(k)
+                        annotation_channel_names.append(annotation_channel_full_names[k])
 
                 #Instantiate the classification object
-                result_classification, saved = Classification.objects.create_classification(classification_id=classification_id, annotation=annotation, workflow_id=workflow_id,user_id=user_id, subject_id=subject_id)
+                result_classification, saved = Classification.objects.create_classification(classification_id=classification_id, annotation=annotation, \
+                 workflow_id=workflow_id,user_id = user_id, subject_id=subject_id, event_time=event_time, gravityspy_id=gravityspy_id, ifo=ifo, \
+                 main_channel_name=main_channel_name, event_generator=event_generator, annotation_channel_names=annotation_channel_names, hveto_round_number=hveto_round_number)
                 
                 #Log on the terminal
                 if options['verbose'] is True:
                     if saved is True:
-                    # Classification is saved successfully
+                        # Classification is saved successfully
                         print("id is {0}".format(result_classification.classification_id))
                         print("annotation is {0}".format(result_classification.annotation))
                         print("workflow is {0}".format(result_classification.workflow_id))
                         print("user is {0}".format(result_classification.user_id))
                         print("subject is {0}".format(result_classification.subject_id))
+                        print("main_channel_name is {0}".format(result_classification.main_channel_name))
+                        print("annotation_channel_names is {0}".format(result_classification.annotation_channel_names))
+                        # TODO: More information to print?
+
                     else:
                     # Classification is already existed in the table
                         print("classification with id {0} is existed".format(result_classification.classification_id))
