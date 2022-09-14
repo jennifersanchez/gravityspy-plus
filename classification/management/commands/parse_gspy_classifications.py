@@ -68,16 +68,19 @@ class Command(BaseCommand):
                 workflow_id=classification['links']['workflow']
                 user_id=classification['links']['user']
                 subject_id=classification['links']['subjects'][0]      
-                #Log on the terminal
-                if options['verbose'] is True:
-                    print("id is {0}".format(classification_id))
-                    print("annotation is {0}".format(annotation))
-                    print("workflow is {0}".format(workflow_id))
-                    print("user is {0}".format(user_id))
-                    print("subject is {0}".format(subject_id))
 
                 #Instantiate the classification object
-                classification_subject = Classification.objects.create_classification(classification_id=classification_id, annotation=annotation, workflow_id=workflow_id,user_id=user_id, subject_id=subject_id)
+                result_classification, saved = Classification.objects.create_classification(classification_id=classification_id, annotation=annotation, workflow_id=workflow_id,user_id=user_id, subject_id=subject_id)
                 
-                #Save out the subject
-                classification_subject.save()
+                #Log on the terminal
+                if options['verbose'] is True:
+                    if saved is True:
+                    # Classification is saved successfully
+                        print("id is {0}".format(result_classification.classification_id))
+                        print("annotation is {0}".format(result_classification.annotation))
+                        print("workflow is {0}".format(result_classification.workflow_id))
+                        print("user is {0}".format(result_classification.user_id))
+                        print("subject is {0}".format(result_classification.subject_id))
+                    else:
+                    # Classification is already existed in the table
+                        print("classification with id {0} is existed".format(result_classification.classification_id))

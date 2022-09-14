@@ -10,7 +10,7 @@ class ClassificationManager(models.Manager):
         self.workflow_id=workflow_id
         self.user_id=user_id
         self.subject_id=subject_id
-        classification_subject = self.create(classification_id=self.classification_id, annotation=self.annotation, workflow_id=self.workflow_id, user_id=self.user_id, subject_id=self.subject_id)
+        classification_subject = self.get_or_create(classification_id=self.classification_id, annotation=self.annotation, workflow_id=self.workflow_id, user_id=self.user_id, subject_id=self.subject_id)
         return classification_subject
 
 #Create the Django model
