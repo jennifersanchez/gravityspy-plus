@@ -104,4 +104,4 @@ class Command(BaseCommand):
 
                     else:
                     # Classification is already existed in the table
-                        print("classification with id {0} is existed".format(result_classification.classification_id))
+                        print("classification with id {0} is existing".format(result_classification.classification_id))
