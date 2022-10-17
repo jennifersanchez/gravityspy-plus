@@ -29,6 +29,7 @@ import os
 import datetime
 import panoptes_client
 import glob
+import re
 
 class GravitySpySubjectManager(models.Manager):
     def create_gravityspy_subject(self, event_time, ifo, config, gravityspy_id=None, event_generator=None, auxiliary_channel_correlation_algorithm=None, number_of_aux_channels_to_show=None, manual_list_of_auxiliary_channel_names=None):
@@ -91,6 +92,7 @@ class GravitySpySubjectManager(models.Manager):
                 auxiliary_channels_ordered_by_signifigance = hveto_parser.hveto_parser(each_round_svg)
 
             self.list_of_auxiliary_channel_names = auxiliary_channels_ordered_by_signifigance[0:number_of_aux_channels_to_show]
+           
         else:
             raise ValueError("You supplied a auxiliary_channel_correlation_algorithm that is not recognized")
 
@@ -144,12 +146,12 @@ class GravitySpySubjectManager(models.Manager):
 
     def save_omega_scans(self, pool=None, **kwargs):
         # Parse key word arguments
-        plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), str(self.event_time)))
+        plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), "round_{0}".format(self.hveto_round_number), str(self.event_time)))
         verbose = kwargs.pop('verbose', False)
         nproc = kwargs.pop('nproc', 1)
 
-        inputs = inputs = ((self.event_time, self.ifo, '{0}_{1}'.format(self.gravityspy_id, channel_name), self.config, plot_directory, channel_name, frametype, verbose, q_transform) for channel_name, frametype, q_transform in zip(self.all_channels, self.frametypes, self.q_transforms))
-
+        inputs = inputs = ((self.event_time, self.ifo, '{0}_{1}'.format(self.gravityspy_id, re.sub(r":", "_", channel_name)), self.config, os.path.join(plot_directory, "top_{0}".format(str(i))) if i != 0 else plot_directory, channel_name, frametype, verbose, q_transform) for i, (channel_name, frametype, q_transform) in enumerate(zip(self.all_channels, self.frametypes, self.q_transforms)))
+       
         # make q_scans
         if (pool is None) and (nproc > 1):
             with multiprocessing.Pool(nproc) as pool:
@@ -160,13 +162,13 @@ class GravitySpySubjectManager(models.Manager):
         elif pool is not None:
             output = pool.map(utils._save_q_scans,
                               inputs)
-
+        
         for event_time, individual_image_filenames, combined_image_filename in output:
             self.ldvw_glitchdb_image_filenames.append(combined_image_filename)
             self.zooniverse_subject_image_filenames.extend(individual_image_filenames)
 
     def combine_images_for_subject_upload(self, number_of_rows=3, **kwargs):
-        plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), str(self.event_time)))
+        plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), str(self.gravityspy_id), self.hveto_round_number))
 
         # group the images by their durations
         f = lambda x: x.split('_')[-1]
@@ -207,7 +209,7 @@ class GravitySpySubjectManager(models.Manager):
                     all_channels.append(channel_name)
 
                     # obtain duration from filename
-                    duration = image_filename.split('_')[-1].replace('.png', '')
+                    duration = (image_filename.split('_')[-1].replace('.png', ''))
 
                     # opening up of images
                     sub_image = Image.open(image_filename)
