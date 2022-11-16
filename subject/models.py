@@ -101,9 +101,8 @@ class GravitySpySubjectManager(models.Manager):
 
             event_time_in_YYYYMMDD_format = event_time_in_date_format.strftime("%Y%m%d")
             
-            each_rounds_svg_file = glob.glob("/home/detchar/public_html/hveto/day/{0}/latest/plots/*ROUND_{1}*.svg".format(event_time_in_YYYYMMDD_format, round_number))
-            for each_round_svg in each_rounds_svg_file:
-                auxiliary_channels_ordered_by_signifigance = hveto_parser.hveto_parser(each_round_svg)
+            each_round_svg_file = glob.glob("/home/detchar/public_html/hveto/day/{0}/latest/plots/*ROUND_{1}-*.svg".format(event_time_in_YYYYMMDD_format, round_number))
+            auxiliary_channels_ordered_by_signifigance = hveto_parser.hveto_parser(each_round_svg_file[0])
 
             self.list_of_auxiliary_channel_names = auxiliary_channels_ordered_by_signifigance[0:number_of_aux_channels_to_show]
         else:
