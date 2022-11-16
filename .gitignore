@@ -108,3 +108,8 @@ venv.bak/
 
 # plots
 plots/
+
+# CSVs
+*.csv
+
+./H1_O3b.csv

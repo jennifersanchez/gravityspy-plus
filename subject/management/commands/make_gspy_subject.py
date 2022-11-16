@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from subject.models import GravitySpySubject
 from gravityspy_ligo.table.events import Events
 from gravityspy_ligo.utils import utils
+import os
 
 class Command(BaseCommand):
     help = 'Querying hveto results and product Gravity Spy Plus subjects'
@@ -15,7 +16,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         ### Select the parameters of the spectrograms/q_transforms you will be plotting (including all of the different plotting windows your would like
-        config = utils.GravitySpyConfigFile(plot_time_ranges=[8.0, 4.0, 2.0, 1.0])
+        config = utils.GravitySpyConfigFile(plot_time_ranges=[4.0, 2.0, 1.0, 0.5])
 
         # If we have a specific
         if options['event_time'] is not None:
@@ -43,19 +44,21 @@ class Command(BaseCommand):
             end_time = options['end_time']
 
             table_of_glitch_times = Events.get_triggers(start=start_time, end=end_time, channel='{0}:GDS-CALIB_STRAIN'.format(options['ifo']), dqflag=None, algorithm='hveto', verbose=True)
-
-            table_of_glitch_times = Events.from_pandas(table_of_glitch_times.to_pandas().groupby("hveto_round").sample(n=20))
+            
+            table_of_glitch_times = Events.from_pandas(table_of_glitch_times.to_pandas().groupby("hveto_round").sample(n=20, replace=True))
             
             for event_time, round_number in zip(table_of_glitch_times['time'], table_of_glitch_times['hveto_round']):
+                # Parse event_time and relative gravityspy_id from csv
+                m_event_time_id = GravitySpySubject.objects.parse_csv(os.path.join(os.getcwd(),'H1_O3b.csv'))
 
                 # initialize the Django model
-                sub = GravitySpySubject.objects.create_gravityspy_subject(event_time=event_time, ifo=options['ifo'], config=config, auxiliary_channel_correlation_algorithm={'hveto':round_number}, number_of_aux_channels_to_show=5)
+                sub = GravitySpySubject.objects.create_gravityspy_subject(event_time=event_time, ifo=options['ifo'], config=config, auxiliary_channel_correlation_algorithm={'hveto':round_number}, number_of_aux_channels_to_show=30, m_event_time_id=m_event_time_id)
 
                 # Make the spectrograms/omega scans for each data stream
-                GravitySpySubject.objects.make_omega_scans(verbose=False, nproc=7)
+                GravitySpySubject.objects.make_omega_scans(verbose=True, nproc=7)
 
                 # Save the spectrograms as PNGs with specific settings  
-                GravitySpySubject.objects.save_omega_scans(verbose=False, nproc=7)
+                GravitySpySubject.objects.save_omega_scans(verbose=True, nproc=7)
 
                 # Combine the individual spectrogram images into images with 1 columns and 4 rows
                 #GravitySpySubject.objects.combine_images_for_subject_upload()

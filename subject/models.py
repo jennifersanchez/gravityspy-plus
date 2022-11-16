@@ -30,9 +30,23 @@ import datetime
 import panoptes_client
 import glob
 import re
+import csv
 
 class GravitySpySubjectManager(models.Manager):
-    def create_gravityspy_subject(self, event_time, ifo, config, gravityspy_id=None, event_generator=None, auxiliary_channel_correlation_algorithm=None, number_of_aux_channels_to_show=None, manual_list_of_auxiliary_channel_names=None):
+    def parse_csv(self, filename):
+      map = dict()
+      with open(filename) as csv_file:
+          csv_reader = csv.reader(csv_file, delimiter=',')
+          isTitle = True
+          for row in csv_reader:
+              if isTitle:
+                  isTitle = False
+                  continue    
+              map[row[0]] = row[14]
+
+      return map
+
+    def create_gravityspy_subject(self, event_time, ifo, config, gravityspy_id=None, event_generator=None, auxiliary_channel_correlation_algorithm=None, number_of_aux_channels_to_show=None, manual_list_of_auxiliary_channel_names=None, m_event_time_id=None):
         """Example of docstring on the __init__ method.
         Args:
             event_time (float): The GPS time at which an excess noise event occurred.
@@ -58,6 +72,7 @@ class GravitySpySubjectManager(models.Manager):
         self.zooniverse_subject_image_filenames = []
         self.zooniverse_subject_ids = []
         self.hveto_round_number = -1
+        self.m_event_time_id = m_event_time_id
 
         # If a manual list of auxiliary channels were provided, we can set a lot fo these attributes right now.
         if manual_list_of_auxiliary_channel_names is not None:
@@ -85,14 +100,12 @@ class GravitySpySubjectManager(models.Manager):
             event_time_in_date_format = time.from_gps(self.event_time)
 
             event_time_in_YYYYMMDD_format = event_time_in_date_format.strftime("%Y%m%d")
-
+            
             each_rounds_svg_file = glob.glob("/home/detchar/public_html/hveto/day/{0}/latest/plots/*ROUND_{1}*.svg".format(event_time_in_YYYYMMDD_format, round_number))
-
             for each_round_svg in each_rounds_svg_file:
                 auxiliary_channels_ordered_by_signifigance = hveto_parser.hveto_parser(each_round_svg)
 
             self.list_of_auxiliary_channel_names = auxiliary_channels_ordered_by_signifigance[0:number_of_aux_channels_to_show]
-           
         else:
             raise ValueError("You supplied a auxiliary_channel_correlation_algorithm that is not recognized")
 
@@ -126,8 +139,7 @@ class GravitySpySubjectManager(models.Manager):
         elif (pool is None) and (nproc == 1):
             output = list(map(utils._make_single_qscan, inputs))
         elif pool is not None:
-            output = pool.map(utils._make_single_qscan,
-                              inputs)
+            output = pool.map(utils._make_single_qscan, inputs)
 
         # raise exceptions (from multiprocessing, single process raises inline)
         for event_time, q_transform, q_value in output:
@@ -146,7 +158,11 @@ class GravitySpySubjectManager(models.Manager):
 
     def save_omega_scans(self, pool=None, **kwargs):
         # Parse key word arguments
-        plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), "round_{0}".format(self.hveto_round_number), str(self.event_time)))
+        if self.m_event_time_id != None and '{0}'.format(self.event_time) in self.m_event_time_id.keys():
+            self.gravityspy_id = self.m_event_time_id['{0}'.format(self.event_time)]
+            plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), "round_{0}".format(self.hveto_round_number), self.m_event_time_id['{0}'.format(self.event_time)]))
+        else:
+            plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), "round_{0}".format(self.hveto_round_number), str(self.event_time)))
         verbose = kwargs.pop('verbose', False)
         nproc = kwargs.pop('nproc', 1)
 
