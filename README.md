@@ -82,7 +82,7 @@ export GRAVITYSPYPLUS_DATABASE_HOST="gravityspyplus.ciera.northwestern.edu"
 export GRAVITYSPYPLUS_DATABASE_PORT="5432"
 ```
 
-## Parse classifications from Zooniverse and save into Psql database
+## Parse classifications from Zooniverse and save into psql database
 ```
 ./manage.py parse_gspy_classifications --workflow-id=23089
 ```
