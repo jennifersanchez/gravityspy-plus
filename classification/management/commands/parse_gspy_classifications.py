@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 break
 
         for classification in list_of_classification_dictionaries:
-            if classification['links']['workflow'] == '21793':
+            if classification['links']['workflow'] == kwargs_classifications["workflow_id"]:
                 classification_id=classification['id']
                 #Create an annotation dictionary
                 annotation_counts = [0] * 3
@@ -99,7 +99,7 @@ class Command(BaseCommand):
                         print("user is {0}".format(result_classification.user_id))
                         print("subject is {0}".format(result_classification.subject_id))
                         print("main_channel_name is {0}".format(result_classification.main_channel_name))
-                        print("annotation_channel_names is {0}".format(result_classification.annotation_channel_names))
+                        print("annotation_channel_names are {0}".format(result_classification.annotation_channel_names))
                         # TODO: More information to print?
 
                     else:
