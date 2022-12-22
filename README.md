@@ -1,3 +1,4 @@
+# Gravity Spy Plus 2.0
 # Prerequsities
 
 ## Login to LIGO Server with SSH
@@ -39,14 +40,19 @@ export PANOPTES_PASSWORD=(your zooniverse password)
 ```
 
 # Make Gravity Spy subject and upload to Zooniverse
+This pipeline generate omega scans from given event time on both main channel and auxiliary channels. Then it concatenate main channels and auxiliary channels PNGs vertically into a subject. Finally it upload all subjects to Zooniverse subject sets.
 
-## Manually run make_gspy_subject on a pre-selected set of auxiallary channels
+Under the hood, given an event time of Gravity Spy event at which an excess noise event occurred, the interferometer id, the round number of Hveto rounds and number of auxiliary channels, it returns a set of combination images for main channel and auxiliary channels with highest correlation in multiple durations and upload it to the zooniverse project set.
+
+- ifo (str): What interferometer had this an excess noise event.
+- manual_list_of_auxiliary_channel_names (list)[optional, None]: This will override any auxiliary channel list that might have been supplied by the auxiliary_channel_correlation_algorithm and force this to be the auxiliary channels that are associated with this Subject.
+## Manually run make_gspy_subject on a pre-selected set of auxiliary channels
 ```
 cd gravityspy-plus
 ./manage.py make_gspy_subject --event-time 1253940741.813 --ifo H1 --manual-list-of-auxiliary-channel-names H1:ASC-AS_A_RF45_Q_YAW_OUT_DQ H1:LSC-REFL_A_LF_OUT_DQ H1:ASC-AS_A_RF45_Q_PIT_OUT_DQ
 ```
 
-## Use HVeto to select top N auxiliary channels within a period of event time with LLO
+## Use Hveto to select top N auxiliary channels within a period of event time with LLO
 ```
 ./manage.py make_gspy_subject --ifo L1 --start-time 1262304018 --end-time 1262390418
 ```
@@ -56,6 +62,7 @@ cd gravityspy-plus
 ./manage.py make_gspy_subject --ifo H1 --start-time 1262790978 --end-time 1262822978
 ```
 # Parse Classifications from Zooniverse
+This pipeline parse classifications from Zooniverse that are annotated by volunteers. The classification is whether the glitch in auxiliary channel is related to glitch in main/h(t) channel. Then it will save each classification as an item in psql database table, which records the annotation and subject information, such as channel names and event time.
 
 ## Install Homebrew 
 See instruction on https://docs.brew.sh/Installation
