@@ -72,7 +72,7 @@ class GravitySpySubjectManager(models.Manager):
             self.auxiliary_channel_correlation_algorithm = None
         elif 'hveto' in auxiliary_channel_correlation_algorithm.keys():
 
-            # if we passed 'hveto' as our algorith, we must also have identified what round this glitch is associated with.
+            # if we passed 'hveto' as our algorithm, we must also have identified what round this glitch is associated with.
             round_number = auxiliary_channel_correlation_algorithm['hveto']
             self.hveto_round_number = round_number
 

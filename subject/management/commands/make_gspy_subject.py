@@ -32,7 +32,7 @@ class Command(BaseCommand):
             # Combine the individual spectrogram images into images with 1 columns and 4 rows
             GravitySpySubject.objects.combine_images_for_subject_upload()
 
-            # upload the subject to zooniverse 
+            # upload the subject to zooniverse in the subject set with given subject set id 
             GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=103434)
 
             # save out subject
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 # Combine the individual spectrogram images into images with 1 columns and 4 rows
                 GravitySpySubject.objects.combine_images_for_subject_upload()
 
-                # upload the subject to zooniverse 
+                # upload the subject to zooniverse in the subject set with given subject set id
                 GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=103434)
 
                 # save out subject
