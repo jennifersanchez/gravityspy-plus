@@ -27,6 +27,17 @@ See source code in https://github.com/Gravity-Spy/gravityspy-ligo-pipeline.
 cd ..
 git clone https://github.com/haorenzhi/gravityspy-plus.git
 ```
+
+## Login to Zooniverse 
+
+- Register for a Zooniverse account
+- Add login credentials below into shell run control file (normally ~/.bashrc or ~/.zshrc)
+```
+#Panoptes Login
+export PANOPTES_USERNAME=(your zooniverse username)
+export PANOPTES_PASSWORD=(your zooniverse password)
+```
+
 # Make Gravity Spy subject and upload to Zooniverse
 
 ## Manually run make_gspy_subject on a pre-selected set of auxiallary channels
@@ -44,7 +55,38 @@ cd gravityspy-plus
 ```
 ./manage.py make_gspy_subject --ifo H1 --start-time 1262790978 --end-time 1262822978
 ```
-# Parse Classification from Zooniverse
+# Parse Classifications from Zooniverse
+
+## Install Homebrew 
+See instruction on https://docs.brew.sh/Installation
+
+## Install Postgresql
+```
+​​brew install postgresql
+```
+
+## Add login credentials below into ~/.bashrc 
+```
+#Django Login
+export GRAVITYSPYPLUS_DATABASE_NAME="gravityspyplus"
+export GRAVITYSPYPLUS_DATABASE_USER="django_gravityspyplus_user"
+export GRAVITYSPYPLUS_DATABASE_PASSWORD="(contact lab for password)"
+export GRAVITYSPYPLUS_DATABASE_HOST="gravityspyplus.ciera.northwestern.edu"
+export GRAVITYSPYPLUS_DATABASE_PORT="5432"
+```
+
+## Parse classifications from Zooniverse and save into Psql database
 ```
 ./manage.py parse_gspy_classifications --workflow-id=23089
+```
+
+## Login to psql database
+```
+psql -U django_gravityspyplus_user -d gravityspyplus -h gravityspyplus.ciera.northwestern.edu
+```
+
+## View parsed classifications table in psql database
+```
+\d
+select * from classification_classfication;
 ```
