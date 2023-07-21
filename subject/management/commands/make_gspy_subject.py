@@ -24,7 +24,7 @@ class Command(BaseCommand):
             sub = GravitySpySubject.objects.create_gravityspy_subject(event_time=options['event_time'], ifo=options['ifo'], config=config, manual_list_of_auxiliary_channel_names=options['manual_list_of_auxiliary_channel_names'])
 
             # Make the spectrograms/omega scans for each data stream
-            GravitySpySubject.objects.make_omega_scans(verbose=False, nproc=1)
+            GravitySpySubject.objects.make_omega_scans(verbose=False, nproc=16)
 
             # Save the spectrograms as PNGs with specific settings                
             GravitySpySubject.objects.save_omega_scans(verbose=False, nproc=1)
@@ -33,7 +33,7 @@ class Command(BaseCommand):
             GravitySpySubject.objects.combine_images_for_subject_upload()
 
             # upload the subject to zooniverse in the subject set with given subject set id 
-            GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=103434)
+            GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=114732)
 
             # save out subject
             sub.save()
@@ -44,7 +44,7 @@ class Command(BaseCommand):
 
             table_of_glitch_times = Events.get_triggers(start=start_time, end=end_time, channel='{0}:GDS-CALIB_STRAIN'.format(options['ifo']), dqflag=None, algorithm='hveto', verbose=True)
 
-            table_of_glitch_times = Events.from_pandas(table_of_glitch_times.to_pandas().groupby("hveto_round").sample(n=9))
+            table_of_glitch_times = Events.from_pandas(table_of_glitch_times.to_pandas().groupby("hveto_round").sample(n=20, replace=True))
 
             for event_time, round_number in zip(table_of_glitch_times['time'], table_of_glitch_times['hveto_round']):
 
@@ -61,7 +61,7 @@ class Command(BaseCommand):
                 GravitySpySubject.objects.combine_images_for_subject_upload()
 
                 # upload the subject to zooniverse in the subject set with given subject set id
-                GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=103434)
+                GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=114732)
 
                 # save out subject
                 sub.save()

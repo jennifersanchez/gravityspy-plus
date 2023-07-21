@@ -165,7 +165,7 @@ class GravitySpySubjectManager(models.Manager):
             self.ldvw_glitchdb_image_filenames.append(combined_image_filename)
             self.zooniverse_subject_image_filenames.extend(individual_image_filenames)
 
-    def combine_images_for_subject_upload(self, number_of_rows=3, **kwargs):
+    def combine_images_for_subject_upload(self, number_of_rows=1, **kwargs):
         plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), str(self.event_time)))
 
         # group the images by their durations
@@ -236,6 +236,11 @@ class GravitySpySubjectManager(models.Manager):
             subject.links.project = project
             subject.metadata['date'] = datetime.datetime.now().strftime('%Y%m%d')
             subject.metadata['subject_id'] = str(self.gravityspy_id)
+             #-- metadata url
+            aux_channel_str = self.list_of_auxiliary_channel_names[0][3:] #lst to str
+            new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(au\
+x_channel_str)
+            subject.metadata['aux_url'] = str(new_url)
             for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
                 subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
             for idx, image in enumerate(images_for_subject_part):
