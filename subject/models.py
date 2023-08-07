@@ -132,10 +132,10 @@ class GravitySpySubjectManager(models.Manager):
             self.q_values.append(q_value)
             self.q_transforms.append(q_transform)
 
-        box_x =  self.q_transforms[0].box_x
-        box_y =  self.q_transforms[0].box_y
-        box_x_dur =  self.q_transforms[0].box_x_dur
-        box_y_dur =  self.q_transforms[0].box_y_dur
+        box_x =  self.q_transforms[0].xindex
+        box_y =  self.q_transforms[0].yindex
+        box_x_dur =  self.q_transforms[0].dx
+        box_y_dur =  self.q_transforms[0].dy
         for q_scan in self.q_transforms:
             setattr(q_scan, 'box_x', box_x)
             setattr(q_scan, 'box_y', box_y)
@@ -238,8 +238,7 @@ class GravitySpySubjectManager(models.Manager):
             subject.metadata['subject_id'] = str(self.gravityspy_id)
              #-- metadata url
             aux_channel_str = self.list_of_auxiliary_channel_names[0][3:] #lst to str
-            new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(au\
-x_channel_str)
+            new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(aux_channel_str)
             subject.metadata['aux_url'] = str(new_url)
             for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
                 subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
