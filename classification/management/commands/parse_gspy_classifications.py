@@ -10,7 +10,7 @@ from subject.models import GravitySpySubject
 class Command(BaseCommand):
     help = 'Querying the Gravity Spy Plus zooniverse project for classifications'
     def add_arguments(self, parser):
-        parser.add_argument("--project-id", default='9979')
+        parser.add_argument("--project-id", default='1104')
         parser.add_argument("--number-of-classifications", type=int, default=1000)
         parser.add_argument("--last-classification-id", type=int, default=None)
         parser.add_argument("--workflow-id", type=int, default=None)
