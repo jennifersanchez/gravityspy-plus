@@ -221,7 +221,7 @@ class GravitySpySubjectManager(models.Manager):
                 self.zooniverse_subject_image_filenames[subject_part]['images_to_upload'].extend([combined_image_filename])
                 self.zooniverse_subject_image_filenames[subject_part]['channels_in_this_subject'] = all_channels
 
-    def upload_to_zooniverse(self, subject_set_id, project='9979'):
+    def upload_to_zooniverse(self, subject_set_id, project='1104'):
         """Obtain omicron triggers to run gravityspy on
 
         Parameters:
