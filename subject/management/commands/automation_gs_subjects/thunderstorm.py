@@ -5,9 +5,9 @@ import pandas as pd
 
 # Define the auxiliary channel names
 aux_chnls = [
-    "H1:ASC-X_TR_A_NSUM_OUT_DQ",
-    "H1:ASC-X_TR_A_PIT_OUT_DQ",
-    "H1:ASC-Y_TR_A_NSUM_OUT_DQ"
+    "L1:PEM-EX_MIC_VEA_PLUSX_DQ",
+    "L1:PEM-CS_MIC_LVEA_INPUTOPTICS_DQ",
+    "L1:PEM-EY_MIC_VEA_PLUSY_DQ"
 ]
 
 start = tconvert('April 1 2019')  # start of O3
@@ -18,19 +18,18 @@ intervals = [(interval[0], interval[1]) for interval in flag.active]
 
 # Sort the intervals in chronological order
 sorted_intervals = sorted(intervals, key=lambda x: x[0])
+#print('sorted_intervals:',sorted_intervals)
 
-# Convert the intervals to a DataFrame for easier grouping by IFO
-df = pd.DataFrame(sorted_intervals, columns=['start', 'end'])
-df['ifo'] = 'H1'  # Set the IFO value, assuming all intervals are for the same IFO
+# Loop through each sorted interval
+for interval in sorted_intervals:
+    ifo = 'L1'  # Set the IFO value, assuming all intervals are for the same IFO
+    start_time, end_time = interval
+    event_time = (start_time + end_time) / 2.0
+    print("interval",interval)
+    print(f"Event Time: {event_time:.3f}")
 
-# Group the DataFrame by IFO
-grouped = df.groupby('ifo')
+    for aux_chnl in aux_chnls:
+        print("aux_chnl:",aux_chnl)
+        os.system(f"../../../.././manage.py make_gspy_subject --event-time {event_time:.3f} --ifo {ifo} -\-manual-list-of-auxiliary-channel-names {aux_chnl}")
+        
 
-# Loop through each IFO and its corresponding group of intervals
-for ifo, group in grouped:
-    event_times = (group["start"].values + group["end"].values) / 2.0
-    
-    for event_time in event_times:
-        for aux_chnl in aux_chnls:
-            command = f"../../../.././manage.py make_gspy_subject --event-time {event_time:.3f} --ifo {ifo} --manual-list-of-auxiliary-channel-names {aux_chnl}"
-            os.system(command)

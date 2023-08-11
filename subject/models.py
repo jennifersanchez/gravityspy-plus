@@ -216,7 +216,7 @@ class GravitySpySubjectManager(models.Manager):
                     # (position))
                     combined_image.paste(sub_image, (0, 0 + 600*image_idx))
 
-                combined_image_filename = os.path.join(plot_directory, '{0}_{1}_{2}_{3}.png'.format(self.ifo, self.event_time, subject_part, duration))
+                combined_image_filename = os.path.join(plot_directory, '{0}_{1}_{2}.png'.format(self.ifo, subject_part, duration))
                 combined_image.save(combined_image_filename)
                 self.zooniverse_subject_image_filenames[subject_part]['images_to_upload'].extend([combined_image_filename])
                 self.zooniverse_subject_image_filenames[subject_part]['channels_in_this_subject'] = all_channels
@@ -236,12 +236,19 @@ class GravitySpySubjectManager(models.Manager):
             subject.links.project = project
             subject.metadata['date'] = datetime.datetime.now().strftime('%Y%m%d')
             subject.metadata['subject_id'] = str(self.gravityspy_id)
-             #-- metadata url
             aux_channel_str = self.list_of_auxiliary_channel_names[0][3:] #lst to str
             new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(aux_channel_str)
             subject.metadata['aux_url'] = str(new_url)
             for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
-                subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+                if ':' in channel_name: #we're going to clean the channel names in 'channels_in_this_subject'
+                    channel_name_parts = channel_name.split('/') #split every '/'
+                    channel_prefix = channel_name_parts[6][:2] #prefix = ifo
+                    channel_suffix = channel_name_parts[6].split(':', 1)[1] #suffix = channel name
+                    channel_name = "{}:{}".format(channel_prefix, channel_suffix) #desired new channel name
+                    subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+                else:
+                    subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+                
             for idx, image in enumerate(images_for_subject_part):
                 subject.add_location(str(image))
                 subject.metadata['Filename{0}'.format(idx+1)] = image.split('/')[-1]

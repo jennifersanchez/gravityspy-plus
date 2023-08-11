@@ -11,11 +11,16 @@ class Command(BaseCommand):
         parser.add_argument("--event-time", type=float, default=None)
         parser.add_argument("--ifo")
         parser.add_argument("--manual-list-of-auxiliary-channel-names", nargs="+")
-
+        parser.add_argument("--plot_time_range", type=float, default=None) 
     def handle(self, *args, **options):
 
         ### Select the parameters of the spectrograms/q_transforms you will be plotting (including all of the different plotting windows your would like
-        config = utils.GravitySpyConfigFile(plot_time_ranges=[8.0, 4.0, 1.0])
+        if options['plot_time_range'] is not None: 
+            config = utils.GravitySpyConfigFile(plot_time_ranges=[options['plot_time_range'], options['plot_time_range'] + 10])
+        else:
+            config = utils.GravitySpyConfigFile(plot_time_ranges=[8.0, 4.0, 1.0])
+    
+        #config = utils.GravitySpyConfigFile(plot_time_ranges=[8.0, 4.0, 1.0])
 
         # If we have a specific
         if options['event_time'] is not None:
