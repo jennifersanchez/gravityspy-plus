@@ -234,7 +234,7 @@ class GravitySpySubjectManager(models.Manager):
             images_for_subject_part = sorted(subject_part_data['images_to_upload'], reverse=True)
             subject = panoptes_client.Subject()
             subject.links.project = project
-            subject.metadata['date'] = datetime.datetime.now().strftime('%Y%m%d')
+            subject.metadata['date'] = time.from_gps(self.event_time).strftime("%Y%m%d"
             subject.metadata['subject_id'] = str(self.gravityspy_id)
             aux_channel_str = self.list_of_auxiliary_channel_names[0][3:] #lst to str
             new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(aux_channel_str)
