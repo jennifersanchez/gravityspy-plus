@@ -240,7 +240,7 @@ class GravitySpySubjectManager(models.Manager):
             new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(aux_channel_str)
             subject.metadata['aux_url'] = str(new_url)
             for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
-                if ':' in channel_name: #we're going to clean the channel names in 'channels_in_this_subject'
+                if ':' in channel_name: #clean the channel names in 'channels_in_this_subject'
                     channel_name_parts = channel_name.split('/') #split every '/'
                     channel_prefix = channel_name_parts[6][:2] #prefix = ifo
                     channel_suffix = channel_name_parts[6].split(':', 1)[1] #suffix = channel name
