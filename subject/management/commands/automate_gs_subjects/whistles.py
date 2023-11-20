@@ -4,26 +4,27 @@ import os
 #import random
 
 #-- Set the path to the directory where the csv files are stored
-path = "./H1_03_data"
+path = "./detector_data"
 
 #-- Create a list of the csv files in the directory
-csv_files = ["H1_O3a.csv"]
+csv_files = ["L1_O3a.csv"]
 
 #-- Auxiliary channel names
 aux_chnls = [
-    "H1:LSC-REFL_A_LF_OUT_DQ",
-    "H1:ASC-REFL_B_RF9_Q_YAW_OUT_DQ",
-    "H1:LSC-POP_A_LF_OUT_DQ"
+    "L1:LSC-REFL_A_LF_OUT_DQ",
+    "L1:ASC-REFL_B_RF9_Q_YAW_OUT_DQ",
+    "L1:LSC-POP_A_LF_OUT_DQ"
 ]
 
-
+#-- Zooniverse subject ID
+subject_set_id = 117253
 #-- Iterate over each csv file and extract the relevant data
 data = []
 for file in csv_files:
     df = pd.read_csv(os.path.join(path, file))
     df = df[df["ml_confidence"] >= 0.99] # filter for ml_confidence of 0.99 or greater
     df = df[df["ml_label"] == "Whistle"] # filter for ml_label "Whistle"
-    df = df[df["event_time"] > 1244824305.53955] #1238166018
+    df = df[df["event_time"] > 1238166018] # GPS time
     df = df[["ifo", "ml_label", "ml_confidence", "event_time"]] #extract relevant columns
     data.append(df)
 
@@ -46,4 +47,5 @@ for ifo, group in df.groupby("ifo"):
             print("aux_chnl:", aux_chnl)
             print("event_time:", event_time)
            # print(f'--event-time {event_time} --ifo {ifo} -\-manual-list-of-auxiliary-channel-names {aux_chnl}')
-            os.system(f"../../../.././manage.py make_gspy_subject --event-time {event_time} --ifo {ifo} -\-manual-list-of-auxiliary-channel-names {aux_chnl}")
+            os.system(f"../../../.././manage.py make_gspy_subject --event-time {event_time} --ifo {ifo} --subject_set_id {subject_set_id} --manual-list-of-auxiliary-channel-names {aux_chnl}")
+            

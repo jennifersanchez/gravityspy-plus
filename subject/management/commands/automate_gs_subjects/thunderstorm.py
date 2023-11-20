@@ -9,7 +9,6 @@ aux_chnls = [
     "L1:PEM-CS_MIC_LVEA_INPUTOPTICS_DQ",
     "L1:PEM-EY_MIC_VEA_PLUSY_DQ"
 ]
-
 start = tconvert('April 1 2019')  # start of O3
 end = tconvert('March 27 2020')  # end of O3
 flagname = 'L1:DCH-THUNDER_MIC_BP_GT_300'  # from pdf but replace white space for underscores
@@ -30,6 +29,5 @@ for interval in sorted_intervals:
 
     for aux_chnl in aux_chnls:
         print("aux_chnl:",aux_chnl)
-        os.system(f"../../../.././manage.py make_gspy_subject --event-time {event_time:.3f} --ifo {ifo} -\-manual-list-of-auxiliary-channel-names {aux_chnl}")
+        os.system(f"../../../.././manage.py make_gspy_subject --event-time {event_time:.3f} --ifo {ifo} --subject_set_id {subject_set_id}  --manual-list-of-auxiliary-channel-names {aux_chnl}")
         
-
