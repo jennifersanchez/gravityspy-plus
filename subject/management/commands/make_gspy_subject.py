@@ -9,17 +9,18 @@ class Command(BaseCommand):
         parser.add_argument("--start-time", type=float)
         parser.add_argument("--end-time", type=float)
         parser.add_argument("--event-time", type=float, default=None)
+        parser.add_argument("--subject_set_id", type=int, default=None)
         parser.add_argument("--ifo")
         parser.add_argument("--manual-list-of-auxiliary-channel-names", nargs="+")
-        parser.add_argument("--plot_time_range", type=float, default=None) 
+        parser.add_argument("--plot_time_range", type=float, default=None)
     def handle(self, *args, **options):
 
         ### Select the parameters of the spectrograms/q_transforms you will be plotting (including all of the different plotting windows your would like
-        if options['plot_time_range'] is not None: 
+        if options['plot_time_range'] is not None:
             config = utils.GravitySpyConfigFile(plot_time_ranges=[options['plot_time_range'], options['plot_time_range'] + 10])
         else:
             config = utils.GravitySpyConfigFile(plot_time_ranges=[8.0, 4.0, 1.0])
-    
+
         #config = utils.GravitySpyConfigFile(plot_time_ranges=[8.0, 4.0, 1.0])
 
         # If we have a specific
@@ -31,14 +32,14 @@ class Command(BaseCommand):
             # Make the spectrograms/omega scans for each data stream
             GravitySpySubject.objects.make_omega_scans(verbose=False, nproc=16)
 
-            # Save the spectrograms as PNGs with specific settings                
+            # Save the spectrograms as PNGs with specific settings
             GravitySpySubject.objects.save_omega_scans(verbose=False, nproc=1)
 
             # Combine the individual spectrogram images into images with 1 columns and 4 rows
             GravitySpySubject.objects.combine_images_for_subject_upload()
 
-            # upload the subject to zooniverse in the subject set with given subject set id 
-            GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=114732)
+            # upload the subject to zooniverse in the subject set with given subject set id
+            GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=options['subject_set_id'])
 
             # save out subject
             sub.save()
@@ -59,14 +60,14 @@ class Command(BaseCommand):
                 # Make the spectrograms/omega scans for each data stream
                 GravitySpySubject.objects.make_omega_scans(verbose=False, nproc=7)
 
-                # Save the spectrograms as PNGs with specific settings  
+                # Save the spectrograms as PNGs with specific settings
                 GravitySpySubject.objects.save_omega_scans(verbose=False, nproc=7)
 
                 # Combine the individual spectrogram images into images with 1 columns and 4 rows
                 GravitySpySubject.objects.combine_images_for_subject_upload()
 
                 # upload the subject to zooniverse in the subject set with given subject set id
-                GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=114732)
+                GravitySpySubject.objects.upload_to_zooniverse(subject_set_id=options['subject_set_id'])
 
                 # save out subject
                 sub.save()
