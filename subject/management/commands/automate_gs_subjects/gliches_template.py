@@ -1,7 +1,6 @@
 import pandas as pd
 import datetime as dt
 import os
-#import random
 
 #-- Set the path to the directory where the csv files are stored
 path = "./detector_data"
@@ -18,6 +17,7 @@ aux_chnls = [
 
 #-- Zooniverse subject ID
 subject_set_id = 117253
+
 #-- Iterate over each csv file and extract the relevant data
 data = []
 for file in csv_files:
@@ -38,7 +38,7 @@ print(df)
 event_time_length = len(df[["event_time"]])
 print("event_time_length:",event_time_length) # allows to see how many subjects to expect
 
-#-- Group the data by ifo and create 10 subject sets for each ifo
+#-- Group the data by ifo and create subject sets for each ifo
 for ifo, group in df.groupby("ifo"):
     event_times = group["event_time"].values
     for i in range(event_time_length):

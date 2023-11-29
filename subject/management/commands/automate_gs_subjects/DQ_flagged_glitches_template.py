@@ -1,9 +1,10 @@
+# Flagnames located here: https://dcc.ligo.org/DocDB/0173/T2100045/002/DQdoc_O3.pdf 
 import os
 from gwpy.segments import DataQualityFlag
 from gwpy.time import tconvert
 import pandas as pd
 
-# Define the auxiliary channel names
+#-- Define the auxiliary channel names
 aux_chnls = [
     "L1:PEM-EX_MIC_VEA_PLUSX_DQ",
     "L1:PEM-CS_MIC_LVEA_INPUTOPTICS_DQ",
@@ -15,13 +16,16 @@ flagname = 'L1:DCH-THUNDER_MIC_BP_GT_300'  # from pdf but replace white space fo
 flag = DataQualityFlag.query_dqsegdb(flagname, start, end)
 intervals = [(interval[0], interval[1]) for interval in flag.active]
 
-# Sort the intervals in chronological order
+#-- Sort the intervals in chronological order
 sorted_intervals = sorted(intervals, key=lambda x: x[0])
 #print('sorted_intervals:',sorted_intervals)
 
-# Loop through each sorted interval
+#-- Zooniverse subject ID
+subject_set_id = 117253
+
+#-- Loop through each sorted interval
 for interval in sorted_intervals:
-    ifo = 'L1'  # Set the IFO value, assuming all intervals are for the same IFO
+    ifo = 'L1'  
     start_time, end_time = interval
     event_time = (start_time + end_time) / 2.0
     print("interval",interval)
