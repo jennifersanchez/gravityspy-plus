@@ -73,7 +73,7 @@ cd gravityspy-plus
 - gliches_template.py = This will automate the process of manually running make_gspy_subject on a pre-selected set of auxiliary channels. The GPS times will be coming from the csv files.
 ```
 cd gravityspy-plus/subject/management/commands/automate_gs_subjects
-nohup python -u gliches_template.py.py > current_date.out 2>&1 &
+nohup python -u gliches_template.py > current_date.out 2>&1 &
 #output will be put in .out file. this is helpful for when the code breaks and you need to rerun/need the gps time.
 ```
 
