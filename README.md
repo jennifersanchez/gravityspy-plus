@@ -67,6 +67,16 @@ cd gravityspy-plus
 ```
 ./manage.py make_gspy_subject --ifo H1 --subject_set_id 12345 --start-time 1262790978 --end-time 1262822978
 ```
+## Or with automation script
+- Download the required csv files (follow intructions in readme.txt in /detector_data)
+- DQ_flagged_glitches_template.py = Data Quality (DQ) flagged glitches refer to a segment of data that has been marked as potentially affected by noise. These glitches are identified and flagged. In this script, we will be creating subjects based on the DQ flag.
+- gliches_template.py = This will automate the process of manually running make_gspy_subject on a pre-selected set of auxiliary channels. The GPS times will be coming from the csv files.
+```
+cd gravityspy-plus/subject/management/commands/automate_gs_subjects
+nohup python -u gliches_template.py.py > current_date.out 2>&1 &
+#output will be put in .out file. this is helpful for when the code breaks and you need to rerun/need the gps time.
+```
+
 # Parse Classifications from Zooniverse
 This pipeline parse classifications from Zooniverse that are annotated by volunteers. The classification is whether the glitch in auxiliary channel is related to glitch in main/h(t) channel. Then it will save each classification as an item in psql database table, which records the annotation and subject information, such as channel names and event time.
 
