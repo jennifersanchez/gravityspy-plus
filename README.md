@@ -19,11 +19,12 @@ ssh your_user_name@ssh.ligo.org
 ```
 git clone https://github.com/Gravity-Spy/gravityspy-ligo-pipeline.git
 cd gravityspy-ligo-pipeline
+git checkout phase1-v2
 CONDA_OVERRIDE_CUDA="11.2" conda create -c conda-forge --name GS-plus tensorflow python=3.10 cudatoolkit=11.2
+python -m pip install .
 conda install django
 conda install python-nds2-client
 conda activate GS-plus
-python -m pip install .
 ```
 
 See source code in https://github.com/Gravity-Spy/gravityspy-ligo-pipeline.
@@ -32,6 +33,7 @@ See source code in https://github.com/Gravity-Spy/gravityspy-ligo-pipeline.
 ```
 cd ..
 git clone https://github.com/jennifersanchez/gravityspy-plus.git
+git checkout phase1-v2
 ```
 
 ## Login to Zooniverse 
@@ -55,17 +57,17 @@ Under the hood, given an event time of Gravity Spy event at which an excess nois
 ## Manually run make_gspy_subject on a pre-selected set of auxiliary channels
 ```
 cd gravityspy-plus
-./manage.py make_gspy_subject --event-time 1253940741.813 --ifo H1 --subject_set_id 12345 --manual-list-of-auxiliary-channel-names H1:ASC-AS_A_RF45_Q_YAW_OUT_DQ H1:LSC-REFL_A_LF_OUT_DQ H1:ASC-AS_A_RF45_Q_PIT_OUT_DQ
+./manage.py make_gspy_subject --event-time 1238303043.3125 --ifo H1 --subject_set_id 12345 --manual-list-of-auxiliary-channel-names H1:ASC-AS_A_RF45_Q_YAW_OUT_DQ H1:LSC-REFL_A_LF_OUT_DQ H1:ASC-AS_A_RF45_Q_PIT_OUT_DQ
 ```
 
 ## Use Hveto to select top N auxiliary channels within a period of event time with LLO
 ```
-./manage.py make_gspy_subject --ifo L1 --subject_set_id 12345 --start-time 1262304018 --end-time 1262390418 
+./manage.py make_gspy_subject --ifo L1 --subject_set_id 12345 --start-time 1253102469 --end-time 1253103469 
 ```
 
 ## Or with LHO
 ```
-./manage.py make_gspy_subject --ifo H1 --subject_set_id 12345 --start-time 1262790978 --end-time 1262822978
+./manage.py make_gspy_subject --ifo H1 --subject_set_id 12345 --start-time 1238303043 --end-time 1238304043
 ```
 ## Or with automation script
 - Download the required csv files (follow intructions in readme.txt in /detector_data)
