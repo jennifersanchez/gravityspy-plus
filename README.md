@@ -17,7 +17,7 @@ ssh your_user_name@ssh.ligo.org
 ## Install Gravityspy-ligo-pipeline dependency package. 
 
 ```
-git clone https://github.com/Gravity-Spy/gravityspy-ligo-pipeline.git
+git clone https://github.com/jennifersanchez/gravityspy-ligo-pipeline.git
 cd gravityspy-ligo-pipeline
 git checkout phase1-v2
 CONDA_OVERRIDE_CUDA="11.2" conda create -c conda-forge --name GS-plus tensorflow python=3.10 cudatoolkit=11.2
