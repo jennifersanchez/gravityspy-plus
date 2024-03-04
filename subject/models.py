@@ -132,10 +132,10 @@ class GravitySpySubjectManager(models.Manager):
             self.q_values.append(q_value)
             self.q_transforms.append(q_transform)
 
-        box_x =  self.q_transforms[0].box_x
-        box_y =  self.q_transforms[0].box_y
-        box_x_dur =  self.q_transforms[0].box_x_dur
-        box_y_dur =  self.q_transforms[0].box_y_dur
+        box_x =  self.q_transforms[0].xindex
+        box_y =  self.q_transforms[0].yindex
+        box_x_dur =  self.q_transforms[0].dx
+        box_y_dur =  self.q_transforms[0].dy
         for q_scan in self.q_transforms:
             setattr(q_scan, 'box_x', box_x)
             setattr(q_scan, 'box_y', box_y)
@@ -165,7 +165,7 @@ class GravitySpySubjectManager(models.Manager):
             self.ldvw_glitchdb_image_filenames.append(combined_image_filename)
             self.zooniverse_subject_image_filenames.extend(individual_image_filenames)
 
-    def combine_images_for_subject_upload(self, number_of_rows=3, **kwargs):
+    def combine_images_for_subject_upload(self, number_of_rows=1, **kwargs):
         plot_directory = kwargs.pop('plot_directory', os.path.join(os.getcwd(), 'plots', time.from_gps(self.event_time).strftime('%Y-%m-%d'), str(self.event_time)))
 
         # group the images by their durations
@@ -216,12 +216,12 @@ class GravitySpySubjectManager(models.Manager):
                     # (position))
                     combined_image.paste(sub_image, (0, 0 + 600*image_idx))
 
-                combined_image_filename = os.path.join(plot_directory, '{0}_{1}_{2}_{3}.png'.format(self.ifo, self.event_time, subject_part, duration))
+                combined_image_filename = os.path.join(plot_directory, '{0}_{1}_{2}.png'.format(self.ifo, subject_part, duration))
                 combined_image.save(combined_image_filename)
                 self.zooniverse_subject_image_filenames[subject_part]['images_to_upload'].extend([combined_image_filename])
                 self.zooniverse_subject_image_filenames[subject_part]['channels_in_this_subject'] = all_channels
 
-    def upload_to_zooniverse(self, subject_set_id, project='9979'):
+    def upload_to_zooniverse(self, subject_set_id, project='1104'):
         """Obtain omicron triggers to run gravityspy on
 
         Parameters:
@@ -234,10 +234,25 @@ class GravitySpySubjectManager(models.Manager):
             images_for_subject_part = sorted(subject_part_data['images_to_upload'], reverse=True)
             subject = panoptes_client.Subject()
             subject.links.project = project
-            subject.metadata['date'] = datetime.datetime.now().strftime('%Y%m%d')
+            subject.metadata['date'] = time.from_gps(self.event_time).strftime("%Y%m%d")
             subject.metadata['subject_id'] = str(self.gravityspy_id)
+            aux_channel_str = self.list_of_auxiliary_channel_names[0][3:] #lst to str
+            new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(aux_channel_str)
+            subject.metadata['aux_url'] = str(new_url)
+
             for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
                 subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+            
+            # for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
+                # if ':' in channel_name: #clean the channel names in 'channels_in_this_subject'
+                #     channel_name_parts = channel_name.split('/') #split every '/'
+                #     channel_prefix = channel_name_parts[6][:2] #prefix = ifo
+                #     channel_suffix = channel_name_parts[6].split(':', 1)[1] #suffix = channel name
+                #     channel_name = "{}:{}".format(channel_prefix, channel_suffix) #desired new channel name
+                #     subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+                # else:
+                #     subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+                
             for idx, image in enumerate(images_for_subject_part):
                 subject.add_location(str(image))
                 subject.metadata['Filename{0}'.format(idx+1)] = image.split('/')[-1]
