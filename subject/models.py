@@ -131,7 +131,7 @@ class GravitySpySubjectManager(models.Manager):
         for event_time, q_transform, q_value in output:
             self.q_values.append(q_value)
             self.q_transforms.append(q_transform)
-
+       
         box_x =  self.q_transforms[0].xindex
         box_y =  self.q_transforms[0].yindex
         box_x_dur =  self.q_transforms[0].dx
@@ -235,23 +235,27 @@ class GravitySpySubjectManager(models.Manager):
             subject = panoptes_client.Subject()
             subject.links.project = project
             subject.metadata['date'] = time.from_gps(self.event_time).strftime("%Y%m%d")
+            print('subject event_time: ',self.event_time)
             subject.metadata['subject_id'] = str(self.gravityspy_id)
+            print('subject_id: ',str(self.gravityspy_id))
             aux_channel_str = self.list_of_auxiliary_channel_names[0][3:] #lst to str
             new_url = "https://gswiki.ischool.syr.edu/find/Channels/{}".format(aux_channel_str)
             subject.metadata['aux_url'] = str(new_url)
 
             for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
                 subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
-            
-            # for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
-                # if ':' in channel_name: #clean the channel names in 'channels_in_this_subject'
-                #     channel_name_parts = channel_name.split('/') #split every '/'
-                #     channel_prefix = channel_name_parts[6][:2] #prefix = ifo
-                #     channel_suffix = channel_name_parts[6].split(':', 1)[1] #suffix = channel name
-                #     channel_name = "{}:{}".format(channel_prefix, channel_suffix) #desired new channel name
-                #     subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
-                # else:
-                #     subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+                
+            for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
+                if ':' in channel_name: #clean the channel names in 'channels_in_this_subject'
+                    channel_name_parts = channel_name.split('/') #split every '/'
+                    #import pdb; pdb.set_trace()
+                    channel_prefix = channel_name_parts[6][:2] #prefix = ifo
+                    channel_suffix = channel_name_parts[6].split(':', 1)[1] #suffix = channel name
+                    channel_name = "{}:{}".format(channel_prefix, channel_suffix) #desired new channel name
+                    subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
+                    print('channel_name: ',channel_name)
+                else:
+                    subject.metadata['channel_name_{0}'.format(idx+1)] = channel_name
                 
             for idx, image in enumerate(images_for_subject_part):
                 subject.add_location(str(image))

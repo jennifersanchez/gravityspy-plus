@@ -16,7 +16,7 @@ aux_chnls = [
 ]
 
 #-- Zooniverse subject ID
-subject_set_id = 117253
+subject_set_id = 118217
 
 #-- Iterate over each csv file and extract the relevant data
 data = []
@@ -44,8 +44,5 @@ for ifo, group in df.groupby("ifo"):
     for i in range(event_time_length):
         event_time = event_times[i]
         for aux_chnl in aux_chnls: # loops over each channel in aux_chnls
-            print("aux_chnl:", aux_chnl)
-            print("event_time:", event_time)
-           # print(f'--event-time {event_time} --ifo {ifo} -\-manual-list-of-auxiliary-channel-names {aux_chnl}')
             os.system(f"../../../.././manage.py make_gspy_subject --event-time {event_time} --ifo {ifo} --subject_set_id {subject_set_id} --manual-list-of-auxiliary-channel-names {aux_chnl}")
             

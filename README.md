@@ -17,23 +17,17 @@ ssh your_user_name@ssh.ligo.org
 ## Install Gravityspy-ligo-pipeline dependency package. 
 
 ```
-git clone https://github.com/jennifersanchez/gravityspy-ligo-pipeline.git
+git clone https://github.com/Gravity-Spy/gravityspy-ligo-pipeline.git
 cd gravityspy-ligo-pipeline
-git checkout phase1-v2
-CONDA_OVERRIDE_CUDA="11.2" conda create -c conda-forge --name GS-plus tensorflow python=3.10 cudatoolkit=11.2
-python -m pip install .
-conda install django
-conda install python-nds2-client
+CONDA_OVERRIDE_CUDA="11.2" conda create -c conda-forge --name GS-plus tensorflow python=3.10 cudatoolkit=11.2 django python-nds2-client psycopg2 
 conda activate GS-plus
+python -m pip install .
 ```
-
-See source code in https://github.com/Gravity-Spy/gravityspy-ligo-pipeline.
 
 ## Install Gravity Spy Plus
 ```
 cd ..
-git clone https://github.com/jennifersanchez/gravityspy-plus.git
-git checkout phase1-v2
+git clone https://github.com/Gravity-Spy/gravityspy-plus.git
 ```
 
 ## Login to Zooniverse 
@@ -71,24 +65,17 @@ cd gravityspy-plus
 ```
 ## Or with automation script
 - Download the required csv files (follow intructions in readme.txt in /detector_data)
-- DQ_flagged_glitches_template.py = Data Quality (DQ) flagged glitches refer to a segment of data that has been marked as potentially affected by noise. These glitches are identified and flagged. In this script, we will be creating subjects based on the DQ flag.
-- gliches_template.py = This will automate the process of manually running make_gspy_subject on a pre-selected set of auxiliary channels. The GPS times will be coming from the csv files.
+- DQ.py = Data Quality (DQ) flagged glitches refer to a segment of data that has been marked as potentially affected by noise. These glitches are identified and flagged. In this script, we will be creating subjects based on the DQ flag.
+- O3_L1.py and O3_H1.py = Automates the process of manually running make_gspy_subject on a pre-selected set of auxiliary channels. The O3 GPS times will be coming from the csv files.
+- O4.py = Automates the process of using Hveto to select top N auxiliary channels within selected range of O4 GPS times. 
 ```
 cd gravityspy-plus/subject/management/commands/automate_gs_subjects
-nohup python -u gliches_template.py > current_date.out 2>&1 &
+nohup python -u O3_L1.py > current_date.out 2>&1 &
 #output will be put in .out file. this is helpful for when the code breaks and you need to rerun/need the gps time.
 ```
 
 # Parse Classifications from Zooniverse
 This pipeline parse classifications from Zooniverse that are annotated by volunteers. The classification is whether the glitch in auxiliary channel is related to glitch in main/h(t) channel. Then it will save each classification as an item in psql database table, which records the annotation and subject information, such as channel names and event time.
-
-## Install Homebrew 
-See instruction on https://docs.brew.sh/Installation
-
-## Install Postgresql
-```
-​​brew install postgresql
-```
 
 ## Add login credentials below into ~/.bashrc 
 ```

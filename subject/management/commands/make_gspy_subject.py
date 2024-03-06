@@ -30,7 +30,7 @@ class Command(BaseCommand):
             sub = GravitySpySubject.objects.create_gravityspy_subject(event_time=options['event_time'], ifo=options['ifo'], config=config, manual_list_of_auxiliary_channel_names=options['manual_list_of_auxiliary_channel_names'])
 
             # Make the spectrograms/omega scans for each data stream
-            GravitySpySubject.objects.make_omega_scans(verbose=False, nproc=16)
+            GravitySpySubject.objects.make_omega_scans(verbose=False, nproc=1)
 
             # Save the spectrograms as PNGs with specific settings
             GravitySpySubject.objects.save_omega_scans(verbose=False, nproc=1)
@@ -49,7 +49,7 @@ class Command(BaseCommand):
             end_time = options['end_time']
 
             table_of_glitch_times = Events.get_triggers(start=start_time, end=end_time, channel='{0}:GDS-CALIB_STRAIN'.format(options['ifo']), dqflag=None, algorithm='hveto', verbose=True)
-
+            import pdb; pdb.set_trace()
             table_of_glitch_times = Events.from_pandas(table_of_glitch_times.to_pandas().groupby("hveto_round").sample(n=20, replace=True))
 
             for event_time, round_number in zip(table_of_glitch_times['time'], table_of_glitch_times['hveto_round']):
