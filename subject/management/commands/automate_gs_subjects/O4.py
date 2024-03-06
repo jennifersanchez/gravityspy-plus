@@ -15,7 +15,7 @@ subject_set_id = 118217
 event_table = EventTable.fetch('gravityspy','glitches_v2d0',
                                selection=[f'ml_label=Scattered_Light','ml_confidence>.9',
                                           f'{start}<event_time<{end}', f'ifo={detector}','model_name=O4_v1'],
-                               user='mla', passwd='gl1tch35Rb4d!')
+                               user='mla', passwd='')
 
 #-- Select relavent columns
 selected_columns = ['event_time', 'start_time', 'duration', 'Scattered_Light', 'model_name', 'ifo', 'ml_confidence']
