@@ -3,6 +3,7 @@ from cmath import e
 from ctypes import sizeof
 from django.core.management.base import BaseCommand, CommandError
 import panoptes_client
+import warnings
 
 from classification.models import Classification
 from subject.models import GravitySpySubject
@@ -17,8 +18,8 @@ class Command(BaseCommand):
         parser.add_argument("--user-id", type=int, default=None)
         parser.add_argument("--verbose", type=bool, default=True)
 
-   #-- This following function is deprecated and will be replaced soon
     def handle(self, *args, **options):
+        warnings.warn('handle function is deprecated and will be removed soon.')
         kwargs_classifications = {"project_id" : options['project_id'],
                                   "scope" : 'project'}
         if options['last_classification_id'] is not None:
