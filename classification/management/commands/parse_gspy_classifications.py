@@ -17,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument("--user-id", type=int, default=None)
         parser.add_argument("--verbose", type=bool, default=True)
 
-    #last_id reference?
+   #-- This following function is deprecated and will be replaced soon
     def handle(self, *args, **options):
         kwargs_classifications = {"project_id" : options['project_id'],
                                   "scope" : 'project'}
