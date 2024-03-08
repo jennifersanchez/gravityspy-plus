@@ -49,7 +49,6 @@ class Command(BaseCommand):
             end_time = options['end_time']
 
             table_of_glitch_times = Events.get_triggers(start=start_time, end=end_time, channel='{0}:GDS-CALIB_STRAIN'.format(options['ifo']), dqflag=None, algorithm='hveto', verbose=True)
-            table_of_glitch_times = Events.from_pandas(table_of_glitch_times.to_pandas().groupby("hveto_round").sample(n=20, replace=True))
 
             for event_time, round_number in zip(table_of_glitch_times['time'], table_of_glitch_times['hveto_round']):
 
