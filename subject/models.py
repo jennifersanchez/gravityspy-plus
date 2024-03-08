@@ -248,7 +248,6 @@ class GravitySpySubjectManager(models.Manager):
             for idx, channel_name in enumerate(subject_part_data['channels_in_this_subject']):
                 if ':' in channel_name: #clean the channel names in 'channels_in_this_subject'
                     channel_name_parts = channel_name.split('/') #split every '/'
-                    #import pdb; pdb.set_trace()
                     channel_prefix = channel_name_parts[6][:2] #prefix = ifo
                     channel_suffix = channel_name_parts[6].split(':', 1)[1] #suffix = channel name
                     channel_name = "{}:{}".format(channel_prefix, channel_suffix) #desired new channel name
